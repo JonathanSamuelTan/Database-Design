@@ -51,21 +51,23 @@ CREATE TABLE MsLocation(
     LocationZIPCode INT NOT NULL,
     LocationLatitude DECIMAL(9,6) NOT NULL CHECK(LocationLatitude BETWEEN -90 and 90),
     LocationLongitude DECIMAL(10,6) NOT NULL CHECK(LocationLongitude BETWEEN -180 and 180),
+    CONSTRAINT CK_LatitudePrecision CHECK (LocationLatitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]' OR LocationLatitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]'),
+    CONSTRAINT CK_LongitudePrecision CHECK (LocationLongitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]' OR LocationLongitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]'),
 )
 
 CREATE TABLE MsServer(
     ServerID CHAR(9) PRIMARY KEY NOT NULL CHECK(ServerID LIKE 'JCN-V[3-7][1-2][0-9][0-9]'),
     MemoryID CHAR(9) NOT NULL,
-    ServerPrice INT NOT NULL,
     LocationID CHAR(9) NOT NULL,
     ProcessorID CHAR(9) NOT NULL,
+    ServerPrice INT NOT NULL,
     FOREIGN KEY(MemoryID) REFERENCES MsMemory(MemoryID),
     FOREIGN KEY(LocationID) REFERENCES MsLocation(LocationID),
     FOREIGN KEY(ProcessorID) REFERENCES MsProcessor(ProcessorID)
 )
 
 CREATE TABLE TrRental(
-    RentalID CHAR(9) PRIMARY KEY NOT NULL CHECK(RentalID LIKE 'JCN-R[3-7][1-2][0-9][0-9]'),
+    RentalID CHAR(9) PRIMARY KEY NOT NULL CHECK(RentalID LIKE 'JCN-R[0-2][1-2][0-9][0-9]'),
     CustomerID CHAR(9) NOT NULL,
     StaffID CHAR(9) NOT NULL,
     FOREIGN KEY (CustomerID) REFERENCES MsCustomer(CustomerID),
@@ -73,7 +75,7 @@ CREATE TABLE TrRental(
 )
 
 CREATE TABLE TrSales(
-    SalesID CHAR(9) PRIMARY KEY NOT NULL CHECK(SalesID LIKE 'JCN-S[3-7][1-2][0-9][0-9]'),
+    SalesID CHAR(9) PRIMARY KEY NOT NULL CHECK(SalesID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
     CustomerID CHAR(9) NOT NULL,
     StaffID CHAR(9) NOT NULL,
     FOREIGN KEY (CustomerID) REFERENCES MsCustomer(CustomerID),
@@ -83,7 +85,7 @@ CREATE TABLE TrSales(
 
 CREATE TABLE TrRentalDetail(
     RentalDetailID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
-    RentalID CHAR(9) NOT NULL CHECK(RentalID LIKE 'JCN-R[3-7][1-2][0-9][0-9]'),
+    RentalID CHAR(9) NOT NULL CHECK(RentalID LIKE 'JCN-R[0-2][1-2][0-9][0-9]'),
     ServerID CHAR(9) NOT NULL CHECK(ServerID LIKE 'JCN-V[3-7][1-2][0-9][0-9]'),
     StartDate DATE NOT NULL,
     RentalDuration INT NOT NULL,
@@ -93,7 +95,7 @@ CREATE TABLE TrRentalDetail(
 
 CREATE TABLE TrSalesDetail(
     SalesDetailID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
-    SalesID CHAR(9) NOT NULL CHECK(SalesID LIKE 'JCN-S[3-7][1-2][0-9][0-9]'),
+    SalesID CHAR(9) NOT NULL CHECK(SalesID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
     ServerID CHAR(9) NOT NULL CHECK(ServerID LIKE 'JCN-V[3-7][1-2][0-9][0-9]'),
     SalesDate DATE NOT NULL,
     FOREIGN KEY (SalesID) REFERENCES TrSales(SalesID),
@@ -101,32 +103,33 @@ CREATE TABLE TrSalesDetail(
 )
 
 -- DROP TABLE
--- DROP TABLE TrRental
--- DROP TABLE TrSales
--- DROP TABLE TrSalesDetail
--- DROP TABLE TrRentalDetail
--- DROP TABLE MsServer
--- DROP TABLE MsLocation
--- DROP TABLE MsMemory
--- DROP TABLE MsProcessor
--- DROP TABLE MsStaff
--- DROP TABLE MsCustomer
+DROP TABLE TrSalesDetail
+DROP TABLE TrRentalDetail
+DROP TABLE TrRental
+DROP TABLE TrSales
+DROP TABLE MsStaff
+DROP TABLE MsCustomer
+DROP TABLE MsServer
+DROP TABLE MsLocation
+DROP TABLE MsMemory
+DROP TABLE MsProcessor
+
 
 -- SELECT *
 -- SELECT * FROM TrRental
 -- SELECT * FROM TrSales
 -- SELECT * FROM TrSalesDetail
 -- SELECT * FROM TrRentalDetail
--- SELECT * FROM MsServer
--- SELECT * FROM MsLocation
--- SELECT * FROM MsMemory
--- SELECT * FROM MsProcessor
--- SELECT * FROM MsStaff
--- SELECT * FROM MsCustomer
+SELECT * FROM MsServer
+SELECT * FROM MsLocation
+SELECT * FROM MsMemory
+SELECT * FROM MsProcessor
+SELECT * FROM MsStaff
+SELECT * FROM MsCustomer
 
 -- INSERT INTO MASTER TABLE
 
-INSERT INTO MsCustomer VALUES()
+INSERT INTO MsCustomer VALUES('JCN-C3101','Budi Budiman','Male','Budi_B@gmail.com','2000-12-31','085775001112','Jl. Melati 31 Jakarta Pusat')
 INSERT INTO MsCustomer VALUES()
 INSERT INTO MsCustomer VALUES()
 INSERT INTO MsCustomer VALUES()
@@ -137,7 +140,8 @@ INSERT INTO MsCustomer VALUES()
 INSERT INTO MsCustomer VALUES()
 INSERT INTO MsCustomer VALUES()
 
-INSERT INTO MsStaff VALUES()
+-- email staff harus @JCN.com
+INSERT INTO MsStaff VALUES('JCN-S3101','Muhammad Ali','Male','Ali@JCN.com','2003-10-31','085819500111','Jl. Surya Kencana 01 Jakarta Barat','5000000')
 INSERT INTO MsStaff VALUES()
 INSERT INTO MsStaff VALUES()
 INSERT INTO MsStaff VALUES()
@@ -148,7 +152,7 @@ INSERT INTO MsStaff VALUES()
 INSERT INTO MsStaff VALUES()
 INSERT INTO MsStaff VALUES()
 
-INSERT INTO MsMemory VALUES()
+INSERT INTO MsMemory VALUES('JCN-M3101','Hyperion HX7500','HY7500','1500000','16','3200')
 INSERT INTO MsMemory VALUES()
 INSERT INTO MsMemory VALUES()
 INSERT INTO MsMemory VALUES()
@@ -159,7 +163,7 @@ INSERT INTO MsMemory VALUES()
 INSERT INTO MsMemory VALUES()
 INSERT INTO MsMemory VALUES()
 
-INSERT INTO MsProcessor VALUES()
+INSERT INTO MsProcessor VALUES('JCN-P3101','Intel Xeon Platinum 8380','BX807098380','142000000','2800','24')
 INSERT INTO MsProcessor VALUES()
 INSERT INTO MsProcessor VALUES()
 INSERT INTO MsProcessor VALUES()
@@ -170,7 +174,7 @@ INSERT INTO MsProcessor VALUES()
 INSERT INTO MsProcessor VALUES()
 INSERT INTO MsProcessor VALUES()
 
-INSERT INTO MsLocation VALUES()
+INSERT INTO MsLocation VALUES('JCN-L3101','New York City','United States','10001','40.712776','-74.005974')
 INSERT INTO MsLocation VALUES()
 INSERT INTO MsLocation VALUES()
 INSERT INTO MsLocation VALUES()
@@ -181,7 +185,7 @@ INSERT INTO MsLocation VALUES()
 INSERT INTO MsLocation VALUES()
 INSERT INTO MsLocation VALUES()
 
-INSERT INTO MsServer VALUES()
+INSERT INTO MsServer VALUES('JCN-V3101','JCN-M3101','JCN-L3101','JCN-P3101','100000000')
 INSERT INTO MsServer VALUES()
 INSERT INTO MsServer VALUES()
 INSERT INTO MsServer VALUES()
