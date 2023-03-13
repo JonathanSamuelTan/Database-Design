@@ -120,12 +120,12 @@ DROP TABLE MsProcessor
 -- SELECT * FROM TrSales
 -- SELECT * FROM TrSalesDetail
 -- SELECT * FROM TrRentalDetail
-SELECT * FROM MsServer
-SELECT * FROM MsLocation
-SELECT * FROM MsMemory
-SELECT * FROM MsProcessor
-SELECT * FROM MsStaff
-SELECT * FROM MsCustomer
+--SELECT * FROM MsServer
+--SELECT * FROM MsLocation
+--SELECT * FROM MsMemory
+--SELECT * FROM MsProcessor
+--SELECT * FROM MsStaff
+--SELECT * FROM MsCustomer
 
 -- INSERT INTO MASTER TABLE
 
