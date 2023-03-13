@@ -84,20 +84,20 @@ CREATE TABLE TrSales(
 
 
 CREATE TABLE TrRentalDetail(
-    RentalDetailID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     RentalID CHAR(9) NOT NULL CHECK(RentalID LIKE 'JCN-R[0-2][1-2][0-9][0-9]'),
     ServerID CHAR(9) NOT NULL CHECK(ServerID LIKE 'JCN-V[3-7][1-2][0-9][0-9]'),
     StartDate DATE NOT NULL,
     RentalDuration INT NOT NULL,
+    PRIMARY KEY(RentalID,ServerID),
     FOREIGN KEY (RentalID) REFERENCES TrRental(RentalID),
     FOREIGN KEY (ServerID) REFERENCES MsServer(ServerID),
 )
 
 CREATE TABLE TrSalesDetail(
-    SalesDetailID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     SalesID CHAR(9) NOT NULL CHECK(SalesID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
     ServerID CHAR(9) NOT NULL CHECK(ServerID LIKE 'JCN-V[3-7][1-2][0-9][0-9]'),
     SalesDate DATE NOT NULL,
+    PRIMARY KEY(SalesID,ServerID),
     FOREIGN KEY (SalesID) REFERENCES TrSales(SalesID),
     FOREIGN KEY (ServerID) REFERENCES MsServer(ServerID),
 )
