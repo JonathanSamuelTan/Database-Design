@@ -111,16 +111,16 @@ CREATE TABLE TrSalesDetail(
 )
 
 -- DROP TABLE
-DROP TABLE TrSalesDetail
-DROP TABLE TrRentalDetail
-DROP TABLE TrRental
-DROP TABLE TrSales
-DROP TABLE MsStaff
-DROP TABLE MsCustomer
-DROP TABLE MsServer
-DROP TABLE MsLocation
-DROP TABLE MsMemory
-DROP TABLE MsProcessor
+-- DROP TABLE TrSalesDetail
+-- DROP TABLE TrRentalDetail
+-- DROP TABLE TrRental
+-- DROP TABLE TrSales
+-- DROP TABLE MsStaff
+-- DROP TABLE MsCustomer
+-- DROP TABLE MsServer
+-- DROP TABLE MsLocation
+-- DROP TABLE MsMemory
+-- DROP TABLE MsProcessor
 
 
 -- SELECT *
@@ -128,26 +128,27 @@ DROP TABLE MsProcessor
 -- SELECT * FROM TrSales
 -- SELECT * FROM TrSalesDetail
 -- SELECT * FROM TrRentalDetail
---SELECT * FROM MsServer
---SELECT * FROM MsLocation
---SELECT * FROM MsMemory
---SELECT * FROM MsProcessor
---SELECT * FROM MsStaff
---SELECT * FROM MsCustomer
+-- SELECT * FROM MsServer
+-- SELECT * FROM MsLocation
+-- SELECT * FROM MsMemory
+-- SELECT * FROM MsProcessor
+-- SELECT * FROM MsStaff
+-- SELECT * FROM MsCustomer
 
--- INSERT INTO MASTER TABLE
+-- INSERT INTO MASTER TABLE --
 
---INSERT INTO MsCustomer VALUES('JCN-C3101','Budi Budiman','Male','Budi_B@gmail.com','2000-12-31','085775001112','Jl. Melati 31 Jakarta Pusat')
---INSERT INTO MsCustomer VALUES('JCN-C5101','Edwin Tjandra','Male','Edwin_T@gmail.com','2004-05-27','081213878890', 'Jl. Indiana 45 Bekasi Timur' )
---INSERT INTO MsCustomer VALUES('JCN-C6101','Nelson Wijaya','Male','Nelson_W@gmail.com','1999-02-13','089872534116', 'Jl. Sui garden 07 Jakarta Barat')
---INSERT INTO MsCustomer VALUES('JCN-C3201', 'Ellyn Felicia', 'Female', 'Ellyn_F@gmail.com', '2003-05-20','082567913068','Jl. Permata hijau 20 jakarta selatan' )
---INSERT INTO MsCustomer VALUES('JCN-C4201','Tristan Jaya','Male','Tristan_J@gmail.com','2004-06-06','086248716580','Jl. Augh Indah 78 Bekasi Selatan')
---INSERT INTO MsCustomer VALUES('JCN-C7201','Ivan Gemilang', 'Male','Ivan_G@gmail.com','1998-07-01','085782451006','Jl. Cempaka Lestari 09 Jakarta Utara')
---INSERT INTO MsCustomer VALUES('JCN-C3111','Nicholas juang','Male','Nicholas_J@gmail.com','2003-09-12','083425681098','Jl. Pejuang 23 Tanggerang Selatan')
---INSERT INTO MsCustomer VALUES('JCN-C5111','Angel Markus','Female','Angel_M@gmail.com','2004-08-20','089933557766','Jl. Kece Indah 18 Bandung')
---INSERT INTO MsCustomer VALUES('JCN-C6111','Caroline Valen','Female','Caroline_V@gmail.com','2000-01-01','081214151617','Jl. Persahabatan 13 Bekasi Barat')
---INSERT INTO MsCustomer VALUES('JCN-C3103','Vania Tendean','Female','Vania_T@gmail.com','1998-11-12','081984723377','Jl. Imperium Biru 07 Jakarta Barat')
---select* fROM MsCustomer
+INSERT INTO MsCustomer VALUES('JCN-C3101','Budi Budiman','Male','Budi_B@gmail.com','2000-12-31','085775001112','Jl. Melati 31 Jakarta Pusat')
+INSERT INTO MsCustomer VALUES('JCN-C5101','Edwin Tjandra','Male','Edwin_T@gmail.com','2004-05-27','081213878890', 'Jl. Indiana 45 Bekasi Timur' )
+INSERT INTO MsCustomer VALUES('JCN-C6101','Nelson Wijaya','Male','Nelson_W@gmail.com','1999-02-13','089872534116', 'Jl. Sui garden 07 Jakarta Barat')
+INSERT INTO MsCustomer VALUES('JCN-C3201', 'Ellyn Felicia', 'Female', 'Ellyn_F@gmail.com', '2003-05-20','082567913068','Jl. Permata hijau 20 jakarta selatan' )
+INSERT INTO MsCustomer VALUES('JCN-C4201','Tristan Jaya','Male','Tristan_J@gmail.com','2004-06-06','086248716580','Jl. Augh Indah 78 Bekasi Selatan')
+INSERT INTO MsCustomer VALUES('JCN-C7201','Ivan Gemilang', 'Male','Ivan_G@gmail.com','1998-07-01','085782451006','Jl. Cempaka Lestari 09 Jakarta Utara')
+INSERT INTO MsCustomer VALUES('JCN-C3111','Nicholas juang','Male','Nicholas_J@gmail.com','2003-09-12','083425681098','Jl. Pejuang 23 Tanggerang Selatan')
+INSERT INTO MsCustomer VALUES('JCN-C5111','Angel Markus','Female','Angel_M@gmail.com','2004-08-20','089933557766','Jl. Kece Indah 18 Bandung')
+INSERT INTO MsCustomer VALUES('JCN-C6111','Caroline Valen','Female','Caroline_V@gmail.com','2000-01-01','081214151617','Jl. Persahabatan 13 Bekasi Barat')
+INSERT INTO MsCustomer VALUES('JCN-C3103','Vania Tendean','Female','Vania_T@gmail.com','1998-11-12','081984723377','Jl. Imperium Biru 07 Jakarta Barat')
+
+
 -- email staff harus @JCN.com
 INSERT INTO MsStaff VALUES('JCN-S3101','Muhammad Ali','Male','Ali@JCN.com','2003-10-31','085819500111','Jl. Surya Kencana 01 Jakarta Barat','5000000')
 INSERT INTO MsStaff VALUES()
@@ -205,5 +206,3 @@ INSERT INTO MsServer VALUES()
 INSERT INTO MsServer VALUES()
 
 -- INSERT INTO TRANSACTION TABLE
---Tes git KENNY
---tes git kenny 2
