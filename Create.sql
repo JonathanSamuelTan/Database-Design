@@ -1,6 +1,20 @@
 CREATE DATABASE JigitalclouN
 USE JigitalclouN
 
+
+-- DROP TABLE TrSalesDetail
+-- DROP TABLE TrRentalDetail
+-- DROP TABLE TrRental
+-- DROP TABLE TrSales
+-- DROP TABLE MsStaff
+-- DROP TABLE MsCustomer
+-- DROP TABLE MsServer
+-- DROP TABLE MsLocation
+-- DROP TABLE MsMemory
+-- DROP TABLE MsProcessor
+
+
+
 -- CREATE TABLE
 CREATE TABLE MsCustomer(
     CustomerID CHAR(9) PRIMARY KEY NOT NULL CHECK(CustomerID LIKE 'JCN-C[3-7][1-2][0-9][0-9]'),
@@ -109,15 +123,3 @@ CREATE TABLE TrSalesDetail(
     FOREIGN KEY (ServerID) REFERENCES MsServer(ServerID)
     ON UPDATE CASCADE ON DELETE CASCADE
 )
-
--- DROP TABLE
--- DROP TABLE TrSalesDetail
--- DROP TABLE TrRentalDetail
--- DROP TABLE TrRental
--- DROP TABLE TrSales
--- DROP TABLE MsStaff
--- DROP TABLE MsCustomer
--- DROP TABLE MsServer
--- DROP TABLE MsLocation
--- DROP TABLE MsMemory
--- DROP TABLE MsProcessor
