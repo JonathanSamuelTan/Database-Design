@@ -151,15 +151,16 @@ INSERT INTO MsCustomer VALUES('JCN-C3103','Vania Tendean','Female','Vania_T@gmai
 
 -- email staff harus @JCN.com
 INSERT INTO MsStaff VALUES('JCN-S3101','Muhammad Ali','Male','Ali@JCN.com','2003-10-31','085819500111','Jl. Surya Kencana 01 Jakarta Barat','5000000')
-INSERT INTO MsStaff VALUES()
-INSERT INTO MsStaff VALUES()
-INSERT INTO MsStaff VALUES()
-INSERT INTO MsStaff VALUES()
-INSERT INTO MsStaff VALUES()
-INSERT INTO MsStaff VALUES()
-INSERT INTO MsStaff VALUES()
-INSERT INTO MsStaff VALUES()
-INSERT INTO MsStaff VALUES()
+INSERT INTO MsStaff VALUES('JCN-S4112','Ronaldo Messi','Male','Ron@JCN.com','1997-12-12','0875639278457','Jl. Suka Pluto 09 Tanggerang Selatan','5500000' )
+INSERT INTO MsStaff VALUES('JCN-S5112','Perem Puan','Female','Pua@JCN.com','1990-09-06','0837885266119','Jl. Perjuangan Damai Indah 25 Jakarta Utara','19000000')
+INSERT INTO MsStaff VALUES('JCN-S6112','Ihsan Pratama','Male','Ihs@JCN.com','2003-10-09','0896527183766','Jl. Silang terang 90 Bekasi Timur', '9327000')
+INSERT INTO MsStaff VALUES('JCN-S7112', 'Mary Grace', 'Female','Mar@JCN.com','2000-01-30','0965349379878', 'Jl. Duduk kursi 05 Bekasi Barat','7350000')
+INSERT INTO MsStaff VALUES('JCN-S3201','Ludo Vany', 'Female', 'Lud@JCN.com','2000-02-20','08275430326705','Jl. Pisang Hijau 22 Jakarta Barat', '6750000')
+INSERT INTO MsStaff VALUES('JCN-S4201','Erwin Yasri', 'Male', 'Erw@JCN.com', '1990-03-27','0826315830157', 'Jl. Pertama Kinclong 56 Jakarta Selatan', '19999999')
+INSERT INTO MsStaff VALUES('JCN-S5201', 'Wanto Susono', 'Male', 'Wan@JCN.com','1989-04-28','0862236661125','Jl. Piutang Jaya 09 Jakarta Pusat','19999999')
+INSERT INTO MsStaff VALUES('JCN-S6201', 'Annisa Budie' ,'Female','Ann@JCN.com','1999-09-09','0885198571436', 'Jl. Nikah Muda 49 Bekasi Selatan', '4500000')
+INSERT INTO MsStaff VALUES('JCN-S7201', 'Bartholomew Hamish Montgomery', 'Male','Bar@JCN.com','2000-08-21', '0837210689257', 'Jl. Raya Jaya 04 Jakarta Selatan', '8800000')
+-- SELECR *FROM MsStaff
 
 INSERT INTO MsMemory VALUES('JCN-M3101','Hyperion HX7500','HY7500','1500000','16','3200')
 INSERT INTO MsMemory VALUES('JCN-M3102', 'Kingston HyperX Fury DDR4', 'KH8500', '300000','16', '2400')
