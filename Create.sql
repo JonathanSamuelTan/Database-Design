@@ -34,8 +34,7 @@ CREATE TABLE MsStaff(
     StaffDOB DATE NOT NULL,
     StaffPhone varchar(15) NOT NULL,
     StaffAddress VARCHAR(255) NOT NULL,
-    StaffSalary INT NOT NULL
-    CONSTRAINT CHK_Staffsalary CHECK(StaffSalary > 3500000 AND StaffSalary < 20000000)
+    StaffSalary INT NOT NULL CHECK(StaffSalary > 3500000 AND StaffSalary < 20000000)
 )
 
 CREATE TABLE MsProcessor(
@@ -43,10 +42,8 @@ CREATE TABLE MsProcessor(
     ProcessorName VARCHAR(50) NOT NULL,
     ProcessorModelCode VARCHAR(50) NOT NULL,
     ProcessorPrice INT NOT NULL,
-    ProcessorClockSpeed INT NOT NULL
-    CONSTRAINT CHK_ProcessorClockSpeed CHECK(ProcessorClockSpeed BETWEEN 1500 AND 6000),
-    ProcessorCores INT NOT NULL
-    CONSTRAINT CHK_ProcessorCores CHECK(ProcessorCores BETWEEN 1 AND 24)
+    ProcessorClockSpeed INT NOT NULL CHECK(ProcessorClockSpeed BETWEEN 1500 AND 6000),
+    ProcessorCores INT NOT NULL CHECK(ProcessorCores BETWEEN 1 AND 24)
 )
 
 CREATE TABLE MsMemory(
@@ -84,6 +81,8 @@ CREATE TABLE TrRental(
     RentalID CHAR(9) PRIMARY KEY NOT NULL CHECK(RentalID LIKE 'JCN-R[0-2][1-2][0-9][0-9]'),
     CustomerID CHAR(9) NOT NULL,
     StaffID CHAR(9) NOT NULL,
+    StartDate DATE NOT NULL CHECK (StartDate >= '2012-01-01' AND StartDate <= GETDATE()),
+    RentalDuration INT NOT NULL,
     FOREIGN KEY (CustomerID) REFERENCES MsCustomer(CustomerID)
     ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (StaffID) REFERENCES MsStaff(StaffID)
@@ -94,6 +93,7 @@ CREATE TABLE TrSales(
     SalesID CHAR(9) PRIMARY KEY NOT NULL CHECK(SalesID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
     CustomerID CHAR(9) NOT NULL,
     StaffID CHAR(9) NOT NULL,
+    SalesDate DATE NOT NULL,
     FOREIGN KEY (CustomerID) REFERENCES MsCustomer(CustomerID)
     ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (StaffID) REFERENCES MsStaff(StaffID)
@@ -104,8 +104,6 @@ CREATE TABLE TrSales(
 CREATE TABLE TrRentalDetail(
     RentalID CHAR(9) NOT NULL CHECK(RentalID LIKE 'JCN-R[0-2][1-2][0-9][0-9]'),
     ServerID CHAR(9) NOT NULL CHECK(ServerID LIKE 'JCN-V[3-7][1-2][0-9][0-9]'),
-    StartDate DATE NOT NULL,
-    RentalDuration INT NOT NULL,
     PRIMARY KEY(RentalID,ServerID),
     FOREIGN KEY (RentalID) REFERENCES TrRental(RentalID)
     ON UPDATE CASCADE ON DELETE CASCADE,
@@ -116,7 +114,6 @@ CREATE TABLE TrRentalDetail(
 CREATE TABLE TrSalesDetail(
     SalesID CHAR(9) NOT NULL CHECK(SalesID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
     ServerID CHAR(9) NOT NULL CHECK(ServerID LIKE 'JCN-V[3-7][1-2][0-9][0-9]'),
-    SalesDate DATE NOT NULL,
     PRIMARY KEY(SalesID,ServerID),
     FOREIGN KEY (SalesID) REFERENCES TrSales(SalesID)
     ON UPDATE CASCADE ON DELETE CASCADE,
