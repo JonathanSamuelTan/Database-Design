@@ -88,8 +88,9 @@ INSERT INTO TrSalesDetail VALUES('JCN-S0114','JCN-V3108')
 INSERT INTO TrSalesDetail VALUES('JCN-S0115','JCN-V3107')
 INSERT INTO TrSalesDetail VALUES('JCN-S0115','JCN-V3106')
 
-
--- SELECT * FROM TrRental
--- SELECT * FROM TrSales
--- SELECT * FROM TrRentalDetail
--- SELECT * FROM TrSalesDetail
+/*
+SELECT * FROM TrRental
+SELECT * FROM TrSales
+SELECT * FROM TrRentalDetail
+SELECT * FROM TrSalesDetail
+*/

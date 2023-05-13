@@ -39,7 +39,7 @@ USE JigitalclouN
 SELECT
     TS.SalesID,
     MostExpensiveServerPriceOddYear.MostExpensiveServerPrice as 'MostExpensiveServerPrice',
-    ((0.55 * ProcessorClockSpeed * ProcessorCores) + (MemoryFrequency * MemoryCapacity * 0.05)) / 143200
+    CAST(((0.55 * MSP.ProcessorClockSpeed * MSP.ProcessorCores) + (MSM.MemoryFrequency * MSM.MemoryCapacity * 0.05)) / 143200 as decimal(18,3))  AS 'HardwareRatingIndex'
 FROM (
     SELECT TOP 10
         TSD.ServerID,
@@ -56,29 +56,6 @@ JOIN TrSales TS on TSD.SalesID = TS.SalesID
 JOIN MsServer MSS ON TSD.ServerID = MSS.ServerID
 JOIN MsProcessor MSP ON MSS.ProcessorID = MSP.ProcessorID
 JOIN MsMemory MSM ON MSS.MemoryID = MSM.MemoryID
-
---  ------------------------------------------------------
-SELECT
-    TS.SalesID,
-    MostExpensiveServerPriceOddYear.MostExpensiveServerPrice,
-    ((0.55 * MSP.ProcessorClockSpeed * MSP.ProcessorCores) + (MSM.MemoryFrequency * MSM.MemoryCapacity * 0.05)) / 143200  AS 'HardwareRatingIndex'
-FROM (
-    SELECT TOP 10
-        TS.SalesID,
-        MAX(MSS.ServerPrice) AS 'MostExpensiveServerPrice'
-    FROM TrSales TS
-    JOIN TrSalesDetail TSD ON TS.SalesID = TSD.SalesID
-    JOIN MsServer MSS ON TSD.ServerID = MSS.ServerID
-    WHERE YEAR(TS.SalesDate) % 2 != 0
-    GROUP BY TS.SalesID
-    ORDER BY MAX(MSS.ServerPrice) DESC
-) AS MostExpensiveServerPriceOddYear
-JOIN TrSales TS ON MostExpensiveServerPriceOddYear.SalesID = TS.SalesID
-JOIN TrSalesDetail TSD ON TS.SalesID = TSD.SalesID
-JOIN MsServer MSS ON TSD.ServerID = MSS.ServerID
-JOIN MsProcessor MSP ON MSS.ProcessorID = MSP.ProcessorID
-JOIN MsMemory MSM ON MSS.MemoryID = MSM.MemoryID;
-
 
 -- 6
 -- Display ProcessorName (obtained from the first word of ProcessorName followed by a space and ProcessorModel), 
