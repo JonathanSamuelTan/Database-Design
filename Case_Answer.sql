@@ -38,24 +38,26 @@ USE JigitalclouN
 
 SELECT
     TS.SalesID,
-    MostExpensiveServerPriceOddYear.MostExpensiveServerPrice as 'MostExpensiveServerPrice',
-    CAST(((0.55 * MSP.ProcessorClockSpeed * MSP.ProcessorCores) + (MSM.MemoryFrequency * MSM.MemoryCapacity * 0.05)) / 143200 as decimal(18,3))  AS 'HardwareRatingIndex'
+    MostExpensiveServerPriceOddYear.MostExpensiveServerPrice,
+    CAST(((0.55 * MSP.ProcessorClockSpeed * MSP.ProcessorCores) + (MSM.MemoryFrequency * MSM.MemoryCapacity * 0.05)) / 143200 AS DECIMAL(18, 3)) AS HardwareRatingIndex
 FROM (
     SELECT TOP 10
         TSD.ServerID,
-        MAX(MSS.ServerPrice) AS 'MostExpensiveServerPrice'
-    FROM TrSales TS
-    JOIN TrSalesDetail TSD ON TS.SalesID = TSD.SalesID
+        MAX(MSS.ServerPrice) AS MostExpensiveServerPrice
+    FROM TrSalesDetail TSD
     JOIN MsServer MSS ON TSD.ServerID = MSS.ServerID
-    WHERE YEAR(TS.SalesDate) % 2 != 0
+    JOIN TrSales TS ON TSD.SalesID = TS.SalesID
+    WHERE YEAR(TS.SalesDate) % 2 = 1
     GROUP BY TSD.ServerID
-    ORDER BY MAX(MSS.ServerPrice) DESC
+    ORDER BY MostExpensiveServerPrice DESC
 ) AS MostExpensiveServerPriceOddYear
 JOIN TrSalesDetail TSD ON MostExpensiveServerPriceOddYear.ServerID = TSD.ServerID
-JOIN TrSales TS on TSD.SalesID = TS.SalesID
+JOIN TrSales TS ON TSD.SalesID = TS.SalesID
 JOIN MsServer MSS ON TSD.ServerID = MSS.ServerID
 JOIN MsProcessor MSP ON MSS.ProcessorID = MSP.ProcessorID
-JOIN MsMemory MSM ON MSS.MemoryID = MSM.MemoryID
+JOIN MsMemory MSM ON MSS.MemoryID = MSM.MemoryID;
+
+
 
 -- 6
 -- Display ProcessorName (obtained from the first word of ProcessorName followed by a space and ProcessorModel), 
@@ -63,6 +65,45 @@ JOIN MsMemory MSM ON MSS.MemoryID = MSM.MemoryID
 -- ProcessorPriceIDR for the most expensive processors among the ones having the same core count and is used in servers located 
 -- in the northern hemisphere (LocationLatitude is starts from 0 up to 90). The result must not be duplicate.
 -- (ALIAS SUBQUERY)
+
+/* SUBQUERY
+SELECT ProcessorID, ProcessorName, ProcessorCores, ProcessorPrice
+FROM MsProcessor
+WHERE CONCAT(ProcessorCores, '_', ProcessorPrice) IN (
+  SELECT CONCAT(ProcessorCores, '_', MAX(ProcessorPrice))
+  FROM MsProcessor
+  GROUP BY ProcessorCores
+);
+*/
+
+SELECT  CONCAT( LEFT(ExpensiveProcessor.ProcessorName,1),'  ', ExpensiveProcessor.ProcessorModelCode ) as 'ProcessorName',
+        CONCAT( ExpensiveProcessor.ProcessorCores, ' core(s)') as 'CoreCount',
+        ExpensiveProcessor.ProcessorPrice as 'ProcessorPriceIDR'
+FROM (
+    SELECT ProcessorID, ProcessorName, ProcessorCores, ProcessorPrice, ProcessorModelCode
+    FROM MsProcessor
+    WHERE CONCAT(ProcessorCores, '_', ProcessorPrice) IN (
+    SELECT CONCAT(ProcessorCores, '_', MAX(ProcessorPrice))
+    FROM MsProcessor
+    GROUP BY ProcessorCores
+    ) 
+    
+    and
+
+    ProcessorID IN(
+        SELECT ProcessorID
+        FROM MsServer S
+        JOIN MsLocation L on S.LocationID = L.LocationID
+        WHERE L.LocationLatitude between 0 and 90
+    )
+
+) AS [ExpensiveProcessor];
+
+
+
+
+
+
 
 
 
