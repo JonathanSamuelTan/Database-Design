@@ -28,6 +28,18 @@ USE JigitalclouN
 -- (obtained from the average of ServerPriceIDR divided by 1000000 followed by ' million(s) IDR'), for each sale transaction 
 -- occurring in 2016 until 2020 and has AverageServerPrice of more than 50000000.
 
+SELECT  S.SalesID,
+        Count(SD.ServerID) as 'ServerCount',
+        CONCAT(AVG(ServerPrice)/1000000,' million(s) IDR') as 'AverageServerPrice'
+FROM TrSales S JOIN
+TrSalesDetail SD on S.SalesID = SD.SalesID JOIN
+MsServer SV on SD.ServerID = SV.ServerID
+GROUP BY S.SalesID, SalesDate
+HAVING 
+AVG(ServerPrice) > 50000000
+AND
+YEAR(S.SalesDate) between 2016 and 2020 
+
 
 
 -- 5
