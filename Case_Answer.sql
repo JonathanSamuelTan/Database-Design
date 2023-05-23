@@ -30,7 +30,7 @@ USE JigitalclouN
 
 SELECT  S.SalesID,
         Count(SD.ServerID) as 'ServerCount',
-        CONCAT(AVG(ServerPrice)/1000000,' million(s) IDR') as 'AverageServerPrice'
+        CONCAT(CAST(AVG(ServerPrice)/1000000.0 as DECIMAL(18,1)),' million(s) IDR') as 'AverageServerPrice'
 FROM TrSales S JOIN
 TrSalesDetail SD on S.SalesID = SD.SalesID JOIN
 MsServer SV on SD.ServerID = SV.ServerID
