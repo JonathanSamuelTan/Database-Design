@@ -14,6 +14,15 @@ USE JigitalclouN
 -- for every location that has a server using processor with clock speed faster than 3000 MHz. and is located at most 30 degrees 
 -- from the equator (LocationLatitude must be at least -30 and at most 30).
 
+SELECT
+CONCAT (LocationCity,' ', LocationCountry) AS 'Location',
+MIN (ServerPrice) AS 'Cheapest Server Price'
+FROM MsLocation
+JOIN MsServer ON MsLocation.LocationID = MsServer. LocationID
+JOIN MsProcessor ON MsServer.ProcessorID = MsProcessor.ProcessorID
+WHERE ProcessorClockSpeed > 3000
+AND LocationLatitude between -30 and 30
+GROUP BY Locationcity, LocationCountry
 
 
 -- 3
@@ -48,8 +57,6 @@ AVG(ServerPrice) > 50000000
 AND
 YEAR(S.SalesDate) between 2016 and 2020 
 
-
-
 -- 5
 -- Display SaleID, MostExpensiveServerPrice (obtained from the most expensive server price in the transaction), 
 -- HardwareRatingIndex (obtained from ((0.55 * ProcessorClock * ProcessorCoreCount) + (MemoryFrequency * MemoryCapacityGB * 0.05)) / 143200) 
@@ -57,27 +64,30 @@ YEAR(S.SalesDate) between 2016 and 2020
 -- (ALIAS SUBQUERY)
 
 SELECT
-    TS.SalesID,
-    MostExpensiveServerPriceOddYear.MostExpensiveServerPrice,
-    CAST(((0.55 * MSP.ProcessorClockSpeed * MSP.ProcessorCores) + (MSM.MemoryFrequency * MSM.MemoryCapacity * 0.05)) / 143200 AS DECIMAL(18, 3)) AS HardwareRatingIndex
-FROM (
+  Distinct s.SalesID,
+  top_servers.MostExpensiveServerPrice,
+  CAST(((0.55 * p.ProcessorClockSpeed * p.ProcessorCores) + (m.MemoryFrequency * m.MemoryCapacity * 0.05)) / 143200 as decimal(18,3)) AS 'HardwareRatingIndex'
+FROM
+  TrSales s JOIN 
+  TrSalesDetail sd ON s.SalesID = sd.SalesID
+  JOIN (
     SELECT TOP 10
-        TSD.ServerID,
-        MAX(MSS.ServerPrice) AS MostExpensiveServerPrice
-    FROM TrSalesDetail TSD
-    JOIN MsServer MSS ON TSD.ServerID = MSS.ServerID
-    JOIN TrSales TS ON TSD.SalesID = TS.SalesID
-    WHERE YEAR(TS.SalesDate) % 2 = 1
-    GROUP BY TSD.ServerID
-    ORDER BY MostExpensiveServerPrice DESC
-) AS MostExpensiveServerPriceOddYear
-JOIN TrSalesDetail TSD ON MostExpensiveServerPriceOddYear.ServerID = TSD.ServerID
-JOIN TrSales TS ON TSD.SalesID = TS.SalesID
-JOIN MsServer MSS ON TSD.ServerID = MSS.ServerID
-JOIN MsProcessor MSP ON MSS.ProcessorID = MSP.ProcessorID
-JOIN MsMemory MSM ON MSS.MemoryID = MSM.MemoryID;
-
-
+      srv.ServerID,
+      srv.ProcessorID,
+      srv.MemoryID,
+      srv.ServerPrice AS MostExpensiveServerPrice,
+      ts.SalesDate
+    FROM
+      MsServer srv
+      JOIN TrSalesDetail tsd ON srv.ServerID = tsd.ServerID
+      JOIN TrSales ts ON tsd.SalesID = ts.SalesID
+    WHERE
+      YEAR(ts.SalesDate) % 2 !=0
+    ORDER BY
+      srv.ServerPrice DESC
+  ) top_servers ON sd.ServerID = top_servers.ServerID
+  JOIN MsProcessor p ON top_servers.ProcessorID = p.ProcessorID
+  JOIN MsMemory m ON top_servers.MemoryID = m.MemoryID
 
 -- 6
 -- Display ProcessorName (obtained from the first word of ProcessorName followed by a space and ProcessorModel), 
