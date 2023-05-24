@@ -20,7 +20,30 @@ USE JigitalclouN
 -- Display RentalID, MaxMemoryFrequency (obtained from the maximum MemoryFrequencyMHz followed by ' MHz'), 
 -- TotalMemoryCapacity (obtained from the sum of MemoryCapacityGB followed by ' GB') for each rental transaction 
 -- which occurs on the last quarter of 2020.
+SELECT tr.RentalID, CONCAT(MAX(MemoryFrequency),'MHz') AS MaxMemoryFrequency, CONCAT(sum(MemoryCapacity), 'GB') AS 'TotalMemoryCapacity'
+,SalesDate, ts.SalesID
+FROM TrRental tr JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
+JOIN MsServer ms ON trd.ServerID = ms.ServerID 
+JOIN MsMemory mm on mm.MemoryID = ms.MemoryID
+JOIN TrSalesDetail tsd ON ms.ServerID = tsd.ServerID
+JOIN TrSales ts ON tsd.SalesID= ts.SalesID
+GROUP BY tr.RentalID, ts.SalesDate, ts.SalesID
+HAVING DATEPART(QUARTER, ts.SalesDate) =4 AND YEAR(SalesDate) = 2020
 
+-- SELECT tr.RentalID, CONCAT(MAX(MemoryFrequency),'MHz') AS MaxMemoryFrequency, CONCAT(sum(MemoryCapacity), 'GB'),
+-- ts.SalesDate
+-- FROM TrRental tr JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
+-- JOIN MsServer ms ON trd.ServerID = ms.ServerID 
+-- JOIN MsMemory mm on mm.MemoryID = ms.MemoryID
+-- JOIN TrSalesDetail tsd ON ms.ServerID = tsd.ServerID
+-- JOIN TrSales ts ON tsd.SalesID= ts.SalesID
+-- WHERE DATEPART(QUARTER, ts.SalesDate) =4
+-- GROUP BY tr.RentalID, ts.SalesDate
+--Ini versi yang pake where
+
+
+SELECT SalesId,SalesDate
+FROM TrSales
 
 
 -- 4
