@@ -1,18 +1,18 @@
 CREATE DATABASE JigitalclouN
 USE JigitalclouN
 
-
--- DROP TABLE TrSalesDetail
--- DROP TABLE TrRentalDetail
--- DROP TABLE TrRental
--- DROP TABLE TrSales
--- DROP TABLE MsStaff
--- DROP TABLE MsCustomer
--- DROP TABLE MsServer
--- DROP TABLE MsLocation
--- DROP TABLE MsMemory
--- DROP TABLE MsProcessor
-
+/*
+DROP TABLE TrSalesDetail
+DROP TABLE TrRentalDetail
+DROP TABLE TrRental
+DROP TABLE TrSales
+DROP TABLE MsStaff
+DROP TABLE MsCustomer
+DROP TABLE MsServer
+DROP TABLE MsLocation
+DROP TABLE MsMemory
+DROP TABLE MsProcessor
+*/
 
 
 -- CREATE TABLE
