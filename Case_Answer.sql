@@ -20,31 +20,16 @@ USE JigitalclouN
 -- Display RentalID, MaxMemoryFrequency (obtained from the maximum MemoryFrequencyMHz followed by ' MHz'), 
 -- TotalMemoryCapacity (obtained from the sum of MemoryCapacityGB followed by ' GB') for each rental transaction 
 -- which occurs on the last quarter of 2020.
-SELECT tr.RentalID, CONCAT(MAX(MemoryFrequency),'MHz') AS MaxMemoryFrequency, CONCAT(sum(MemoryCapacity), 'GB') AS 'TotalMemoryCapacity'
-,SalesDate, ts.SalesID
-FROM TrRental tr JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
+
+SELECT  tr.RentalID, 
+        CONCAT(MAX(MemoryFrequency),' MHz') AS 'MaxMemoryFrequency',
+        CONCAT(sum(MemoryCapacity), ' GB') AS 'TotalMemoryCapacity'
+FROM TrRental tr 
+JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
 JOIN MsServer ms ON trd.ServerID = ms.ServerID 
 JOIN MsMemory mm on mm.MemoryID = ms.MemoryID
-JOIN TrSalesDetail tsd ON ms.ServerID = tsd.ServerID
-JOIN TrSales ts ON tsd.SalesID= ts.SalesID
-GROUP BY tr.RentalID, ts.SalesDate, ts.SalesID
-HAVING DATEPART(QUARTER, ts.SalesDate) =4 AND YEAR(SalesDate) = 2020
-
--- SELECT tr.RentalID, CONCAT(MAX(MemoryFrequency),'MHz') AS MaxMemoryFrequency, CONCAT(sum(MemoryCapacity), 'GB'),
--- ts.SalesDate
--- FROM TrRental tr JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
--- JOIN MsServer ms ON trd.ServerID = ms.ServerID 
--- JOIN MsMemory mm on mm.MemoryID = ms.MemoryID
--- JOIN TrSalesDetail tsd ON ms.ServerID = tsd.ServerID
--- JOIN TrSales ts ON tsd.SalesID= ts.SalesID
--- WHERE DATEPART(QUARTER, ts.SalesDate) =4
--- GROUP BY tr.RentalID, ts.SalesDate
---Ini versi yang pake where
-
-
-SELECT SalesId,SalesDate
-FROM TrSales
-
+WHERE DATEPART(QUARTER, tr.StartDate) =4 AND YEAR(tr.StartDate) = 2020
+GROUP BY tr.RentalID
 
 -- 4
 -- Display SaleID, ServerCount (obtained from the number of servers in each transaction), AverageServerPrice 
@@ -101,16 +86,6 @@ JOIN MsMemory MSM ON MSS.MemoryID = MSM.MemoryID;
 -- in the northern hemisphere (LocationLatitude is starts from 0 up to 90). The result must not be duplicate.
 -- (ALIAS SUBQUERY)
 
-/* SUBQUERY
-SELECT ProcessorID, ProcessorName, ProcessorCores, ProcessorPrice
-FROM MsProcessor
-WHERE CONCAT(ProcessorCores, '_', ProcessorPrice) IN (
-  SELECT CONCAT(ProcessorCores, '_', MAX(ProcessorPrice))
-  FROM MsProcessor
-  GROUP BY ProcessorCores
-);
-*/
-
 SELECT  CONCAT( LEFT(ExpensiveProcessor.ProcessorName,1),'  ', ExpensiveProcessor.ProcessorModelCode ) as 'ProcessorName',
         CONCAT( ExpensiveProcessor.ProcessorCores, ' core(s)') as 'CoreCount',
         ExpensiveProcessor.ProcessorPrice as 'ProcessorPriceIDR'
@@ -133,14 +108,6 @@ FROM (
     )
 
 ) AS [ExpensiveProcessor];
-
-
-
-
-
-
-
-
 
 --7
 -- Display HiddenCustomerName (obtained from the first letter of CustomerName followed by '***** *****'), 
