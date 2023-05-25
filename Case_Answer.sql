@@ -5,7 +5,14 @@ USE JigitalclouN
 -- (obtained from the maximum amount of rental duration of the handled transactions) for 
 -- every staff who have a salary less than 15000000 and have handled rental transactions 
 -- with customers younger than 20 years old.
-
+SELECT Sf.StaffID, Sf.StaffName, Sf.StaffGender, Sf.StaffSalary,
+	MAX(Rd.RentalDuration) AS LongestPeriod
+FROM MsStaff AS Sf
+	JOIN TrRental AS Rd ON Sf.StaffID = Rd.StaffID
+	JOIN MsCustomer AS Ct ON Rd.CustomerID = Ct.CustomerID
+WHERE Sf.StaffSalary < 15000000
+	AND DATEDIFF(year, Ct.CustomerDOB, GETDATE()) < 20
+GROUP BY Sf.StaffID, Sf.StaffName, Sf.StaffGender, Sf.StaffSalary
 
 
 -- 2
@@ -150,3 +157,18 @@ FROM (
 -- (obtained from the minimum value of ProcessorClockMHZ * ProcessorCoreCount * 0.675, displayed with 1 decimal places followed by ' MHz'), 
 -- MaxEffectiveClock (obtained from the maximum value of ProcessorClockMHZ * ProcessorCoreCount * 0.675, displayed with 1 decimal places followed by ' MHz') 
 -- for every rental transaction that rents a server using a processor with a core count of a power of 2 and that has a MinEffectiveClock of at least 10000.
+
+CREATE VIEW SoldProcessorPerformanceView AS
+SELECT TS.SalesID, 
+	MIN(CAST(MP.ProcessorClockSpeed * MP.ProcessorCores * 0.675 AS DECIMAL(10, 1))) AS MinEffectiveClock,
+	MAX(CAST(MP.ProcessorClockSpeed * MP.ProcessorCores * 0.675 AS DECIMAL(10, 1))) AS MaxEffectiveClock
+FROM TrSales AS TS
+	JOIN TrSalesDetail AS TSD ON TS.SalesID = TSD.SalesID
+	JOIN MsServer AS MS ON TSD.ServerID = MS.ServerID
+	JOIN MsProcessor AS MP ON MS.ProcessorID = MP.ProcessorID
+WHERE MP.ProcessorCores & (MP.ProcessorCores - 1) = 0
+GROUP BY TS.SalesID
+HAVING MIN(CAST(MP.ProcessorClockSpeed * MP.ProcessorCores * 0.675 AS DECIMAL(10, 1))) >= 10000
+
+SELECT * 
+FROM SoldProcessorPerformanceView
