@@ -154,6 +154,26 @@ ORDER BY CurrentPurchaseAmount DESC
 -- TotalValue (obtained from the sum of (ServerPriceIDR / 120 * RentalDuration)) for every staff who have a salary below the average staff salary and 
 -- has a TotalValue more than 10000000. (ALIAS SUBQUERY)
 
+SELECT  CONCAT('Staff ', LEFT(StaffName,charindex(' ',StaffName))) AS 'StaffName', 
+        STUFF(StaffEmail,CHARINDEX('@',StaffEmail)+ 1 ,LEN(StaffEmail) , 'jigitalcloun.net') AS 'StaffEmail',
+        StaffAddress,
+        CONCAT(StaffSalary/1000000, ' milion(s) IDR') AS 'StaffSalary', 
+        subquery.TotalValue
+FROM MsStaff ms 
+JOIN(
+  SELECT StaffID, SUM(ServerPrice/120 * tr.RentalDuration) AS 'TotalValue'
+  FROM TrRental tr
+  JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
+  JOIN MsServer msr ON msr.ServerID = trd.ServerID
+  GROUP BY StaffID
+) AS subquery ON ms.StaffID = subquery.StaffID
+
+JOIN (
+    SELECT AVG(StaffSalary) AS AvgSalary
+    FROM MsStaff
+)avg_subquery ON ms.StaffSalary < avg_subquery.AvgSalary
+
+WHERE subquery.TotalValue > 10000000;
 
 
 -- 9
