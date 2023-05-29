@@ -134,19 +134,26 @@ FROM (
 -- (counted from the sum of ServerPriceIDR for all transactions made) of the customer divided by 1000000 followed by ' point(s)'), 
 -- for each customer who is in the top 10 customer with most spending in server purchasing (sale transactions) in 2015 until 2019 period.
 -- (ALIAS SUBQUERY)
-
-SELECT  TOP(10)
-        CONCAT(LEFT(C.CustomerName,1),'***** *****') as 'HiddenCustomerName',
-        COUNT(S.SalesID) as 'CurrentPurchaseAmount',
-        SUM(Sv.ServerPrice) as 'CountedPurchaseAmount',
-        CONCAT(SUM(Sv.ServerPrice) / 1000000, ' point(s)') AS 'RewardPointsGiven'
+SELECT TOP(10)
+  CONCAT(LEFT(C.CustomerName, 1), '***** *****') AS HiddenCustomerName,
+  T.CurrentPurchaseAmount,
+  T.CountedPurchaseAmount,
+  CONCAT(T.CountedPurchaseAmount / 1000000, ' point(s)') AS RewardPointsGiven
 FROM MsCustomer C
-  JOIN TrSales S on C.CustomerID = S.CustomerID
-  JOIN TrSalesDetail SD on S.SalesID = SD.SalesID
-  JOIN MsServer Sv on SD.ServerID = Sv.ServerID
-WHERE YEAR(S.SalesDate) BETWEEN 2015 AND 2019
-GROUP BY C.CustomerName
-ORDER BY CurrentPurchaseAmount DESC
+JOIN (
+  SELECT
+    S.CustomerID,
+    COUNT(S.SalesID) AS CurrentPurchaseAmount,
+    SUM(Sv.ServerPrice) AS CountedPurchaseAmount
+  FROM TrSales S
+  JOIN TrSalesDetail SD ON S.SalesID = SD.SalesID
+  JOIN MsServer Sv ON SD.ServerID = Sv.ServerID
+  WHERE YEAR(S.SalesDate) BETWEEN 2015 AND 2019
+  GROUP BY S.CustomerID
+) T ON C.CustomerID = T.CustomerID
+ORDER BY T.CurrentPurchaseAmount DESC;
+
+
 
 -- 8
 -- Display StaffName (obtained from 'Staff ' followed by the first word of StaffName), StaffEmail (obtained from replacing part after the '@' in StaffEmail 
