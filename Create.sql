@@ -34,7 +34,7 @@ CREATE TABLE MsStaff(
     StaffDOB DATE NOT NULL,
     StaffPhone varchar(15) NOT NULL,
     StaffAddress VARCHAR(255) NOT NULL,
-    StaffSalary INT NOT NULL CHECK(StaffSalary > 3500000 AND StaffSalary < 20000000)
+    StaffSalary INT NOT NULL CHECK(StaffSalary BETWEEN 3500000 AND 20000000)
 )
 
 CREATE TABLE MsProcessor(
@@ -62,8 +62,8 @@ CREATE TABLE MsLocation(
     LocationZIPCode INT NOT NULL,
     LocationLatitude DECIMAL(9,6) NOT NULL CHECK(LocationLatitude BETWEEN -90 and 90),
     LocationLongitude DECIMAL(10,6) NOT NULL CHECK(LocationLongitude BETWEEN -180 and 180),
-    CONSTRAINT CK_LatitudePrecision CHECK (LocationLatitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]' OR LocationLatitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]'),
-    CONSTRAINT CK_LongitudePrecision CHECK (LocationLongitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]' OR LocationLongitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]'),
+    CONSTRAINT CK_LatitudePrecision CHECK (LocationLatitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]'),
+    CONSTRAINT CK_LongitudePrecision CHECK (LocationLongitude LIKE '%.[0-9][0-9][0-9][0-9][0-9][0-9]'),
 )
 
 CREATE TABLE MsServer(
@@ -72,9 +72,12 @@ CREATE TABLE MsServer(
     LocationID CHAR(9) NOT NULL,
     ProcessorID CHAR(9) NOT NULL,
     ServerPrice INT NOT NULL,
-    FOREIGN KEY(MemoryID) REFERENCES MsMemory(MemoryID),
-    FOREIGN KEY(LocationID) REFERENCES MsLocation(LocationID),
+    FOREIGN KEY(MemoryID) REFERENCES MsMemory(MemoryID)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(LocationID) REFERENCES MsLocation(LocationID)
+    ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY(ProcessorID) REFERENCES MsProcessor(ProcessorID)
+    ON UPDATE CASCADE ON DELETE CASCADE,
 )
 
 CREATE TABLE TrRental(
