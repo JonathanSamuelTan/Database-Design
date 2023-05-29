@@ -134,11 +134,12 @@ FROM (
 -- (counted from the sum of ServerPriceIDR for all transactions made) of the customer divided by 1000000 followed by ' point(s)'), 
 -- for each customer who is in the top 10 customer with most spending in server purchasing (sale transactions) in 2015 until 2019 period.
 -- (ALIAS SUBQUERY)
+
 SELECT TOP(10)
   CONCAT(LEFT(C.CustomerName, 1), '***** *****') AS HiddenCustomerName,
-  T.CurrentPurchaseAmount,
-  T.CountedPurchaseAmount,
-  CONCAT(T.CountedPurchaseAmount / 1000000, ' point(s)') AS RewardPointsGiven
+  Top10.CurrentPurchaseAmount,
+  Top10.CountedPurchaseAmount,
+  CONCAT(Top10.CountedPurchaseAmount / 1000000, ' point(s)') AS RewardPointsGiven
 FROM MsCustomer C
 JOIN (
   SELECT
@@ -150,8 +151,8 @@ JOIN (
   JOIN MsServer Sv ON SD.ServerID = Sv.ServerID
   WHERE YEAR(S.SalesDate) BETWEEN 2015 AND 2019
   GROUP BY S.CustomerID
-) T ON C.CustomerID = T.CustomerID
-ORDER BY T.CurrentPurchaseAmount DESC;
+) Top10 ON C.CustomerID = Top10.CustomerID
+ORDER BY Top10.CurrentPurchaseAmount DESC;
 
 
 
