@@ -34,7 +34,7 @@ CREATE TABLE MsStaff(
     StaffDOB DATE NOT NULL,
     StaffPhone varchar(15) NOT NULL,
     StaffAddress VARCHAR(255) NOT NULL,
-    StaffSalary INT NOT NULL CHECK(StaffSalary BETWEEN 3500000 AND 20000000)
+    StaffSalary INT NOT NULL CHECK(StaffSalary > 3500000 AND StaffSalary < 20000000)
 )
 
 CREATE TABLE MsProcessor(

@@ -5,15 +5,19 @@ USE JigitalclouN
 -- (obtained from the maximum amount of rental duration of the handled transactions) for 
 -- every staff who have a salary less than 15000000 and have handled rental transactions 
 -- with customers younger than 20 years old.
-SELECT  Sf.StaffID,
-        Sf.StaffName, 
-        Sf.StaffGender, 
-        Sf.StaffSalary,
-	      MAX(Rd.RentalDuration) AS LongestPeriod
+SELECT  
+  Sf.StaffID,
+  Sf.StaffName, 
+  Sf.StaffGender, 
+  Sf.StaffSalary,
+	MAX(Rd.RentalDuration) AS LongestPeriod
 FROM MsStaff Sf 
   JOIN TrRental Rd ON Sf.StaffID = Rd.StaffID 
   JOIN MsCustomer Ct ON Rd.CustomerID = Ct.CustomerID
-WHERE Sf.StaffSalary < 15000000 AND DATEDIFF(year, Ct.CustomerDOB, GETDATE()) < 20
+WHERE 
+  Sf.StaffSalary < 15000000
+  AND 
+  DATEDIFF(year, Ct.CustomerDOB, GETDATE()) < 20
 GROUP BY Sf.StaffID, Sf.StaffName, Sf.StaffGender, Sf.StaffSalary
 
 -- 2
@@ -22,13 +26,16 @@ GROUP BY Sf.StaffID, Sf.StaffName, Sf.StaffGender, Sf.StaffSalary
 -- for every location that has a server using processor with clock speed faster than 3000 MHz. and is located at most 30 degrees 
 -- from the equator (LocationLatitude must be at least -30 and at most 30).
 
-SELECT  CONCAT (LocationCity,' ', LocationCountry) AS 'Location',
-        MIN (ServerPrice) AS 'Cheapest Server Price'
+SELECT  
+  CONCAT (LocationCity,' ', LocationCountry) AS 'Location',
+  MIN (ServerPrice) AS 'Cheapest Server Price'
 FROM MsLocation
   JOIN MsServer ON MsLocation.LocationID = MsServer. LocationID
   JOIN MsProcessor ON MsServer.ProcessorID = MsProcessor.ProcessorID
-WHERE ProcessorClockSpeed > 3000
-AND LocationLatitude between -30 and 30
+WHERE 
+  ProcessorClockSpeed > 3000
+  AND
+  LocationLatitude between -30 and 30
 GROUP BY Locationcity, LocationCountry
 
 -- 3
@@ -36,14 +43,18 @@ GROUP BY Locationcity, LocationCountry
 -- TotalMemoryCapacity (obtained from the sum of MemoryCapacityGB followed by ' GB') for each rental transaction 
 -- which occurs on the last quarter of 2020.
 
-SELECT  tr.RentalID, 
-        CONCAT(MAX(MemoryFrequency),' MHz') AS 'MaxMemoryFrequency',
-        CONCAT(sum(MemoryCapacity), ' GB') AS 'TotalMemoryCapacity'
+SELECT  
+  tr.RentalID, 
+  CONCAT(MAX(MemoryFrequency),' MHz') AS 'MaxMemoryFrequency',
+  CONCAT(sum(MemoryCapacity), ' GB') AS 'TotalMemoryCapacity'
 FROM TrRental tr 
   JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
   JOIN MsServer ms ON trd.ServerID = ms.ServerID 
   JOIN MsMemory mm on mm.MemoryID = ms.MemoryID
-WHERE DATEPART(QUARTER, tr.StartDate) =4 AND YEAR(tr.StartDate) = 2020
+WHERE 
+  DATEPART(QUARTER, tr.StartDate) = 4 
+  AND 
+  YEAR(tr.StartDate) = 2020
 GROUP BY tr.RentalID
 
 -- 4
@@ -51,17 +62,16 @@ GROUP BY tr.RentalID
 -- (obtained from the average of ServerPriceIDR divided by 1000000 followed by ' million(s) IDR'), for each sale transaction 
 -- occurring in 2016 until 2020 and has AverageServerPrice of more than 50000000.
 
-SELECT  S.SalesID,
-        Count(SD.ServerID) as 'ServerCount',
-        CONCAT(CAST(AVG(ServerPrice)/1000000.0 as DECIMAL(18,1)),' million(s) IDR') as 'AverageServerPrice'
+SELECT  
+  S.SalesID,
+  Count(SD.ServerID) as 'ServerCount',
+  CONCAT(CAST(AVG(ServerPrice)/1000000 as DECIMAL(18,1)),' million(s) IDR') as 'AverageServerPrice'
 FROM TrSales S 
   JOIN TrSalesDetail SD on S.SalesID = SD.SalesID 
   JOIN MsServer SV on SD.ServerID = SV.ServerID
-GROUP BY S.SalesID, SalesDate
-HAVING 
-  AVG(ServerPrice) > 50000000
-  AND
-  YEAR(S.SalesDate) between 2016 and 2020 
+WHERE YEAR(S.SalesDate) between 2016 and 2020 
+GROUP BY S.SalesID
+HAVING AVG(ServerPrice) > 50000000
 
 -- 5
 -- Display SaleID, MostExpensiveServerPrice (obtained from the most expensive server price in the transaction), 
@@ -72,7 +82,9 @@ HAVING
 SELECT
   Distinct s.SalesID,
   top_servers.MostExpensiveServerPrice,
-  CAST(((0.55 * p.ProcessorClockSpeed * p.ProcessorCores) + (m.MemoryFrequency * m.MemoryCapacity * 0.05)) / 143200 as decimal(18,3)) AS 'HardwareRatingIndex'
+  CAST(
+    ((0.55 * p.ProcessorClockSpeed * p.ProcessorCores) + (m.MemoryFrequency * m.MemoryCapacity * 0.05)) / 143200 as decimal(18,3)
+  ) AS 'HardwareRatingIndex'
 FROM
   TrSales s JOIN 
   TrSalesDetail sd ON s.SalesID = sd.SalesID
@@ -87,13 +99,12 @@ FROM
       MsServer Sv
       JOIN TrSalesDetail tsd ON Sv.ServerID = tsd.ServerID
       JOIN TrSales ts ON tsd.SalesID = ts.SalesID
-    WHERE
-      YEAR(ts.SalesDate) % 2 !=0
     ORDER BY
       Sv.ServerPrice DESC
   ) top_servers ON sd.ServerID = top_servers.ServerID
   JOIN MsProcessor p ON top_servers.ProcessorID = p.ProcessorID
   JOIN MsMemory m ON top_servers.MemoryID = m.MemoryID
+  WHERE YEAR(s.SalesDate) % 2 !=0
 
 -- 6
 -- Display ProcessorName (obtained from the first word of ProcessorName followed by a space and ProcessorModel), 
@@ -101,6 +112,7 @@ FROM
 -- ProcessorPriceIDR for the most expensive processors among the ones having the same core count and is used in servers located 
 -- in the northern hemisphere (LocationLatitude is starts from 0 up to 90). The result must not be duplicate.
 -- (ALIAS SUBQUERY)
+
 
 SELECT  CONCAT( LEFT(ExpensiveProcessor.ProcessorName,1),'  ', ExpensiveProcessor.ProcessorModelCode ) as 'ProcessorName',
         CONCAT( ExpensiveProcessor.ProcessorCores, ' core(s)') as 'CoreCount',
@@ -151,10 +163,8 @@ JOIN (
   JOIN MsServer Sv ON SD.ServerID = Sv.ServerID
   WHERE YEAR(S.SalesDate) BETWEEN 2015 AND 2019
   GROUP BY S.CustomerID
-) Top10 ON C.CustomerID = Top10.CustomerID
+) as Top10 ON C.CustomerID = Top10.CustomerID
 ORDER BY Top10.CurrentPurchaseAmount DESC;
-
-
 
 -- 8
 -- Display StaffName (obtained from 'Staff ' followed by the first word of StaffName), StaffEmail (obtained from replacing part after the '@' in StaffEmail 
