@@ -172,11 +172,12 @@ ORDER BY Top10.CurrentPurchaseAmount DESC;
 -- TotalValue (obtained from the sum of (ServerPriceIDR / 120 * RentalDuration)) for every staff who have a salary below the average staff salary and 
 -- has a TotalValue more than 10000000. (ALIAS SUBQUERY)
 
-SELECT  CONCAT('Staff ', LEFT(StaffName,charindex(' ',StaffName))) AS 'StaffName', 
-        STUFF(StaffEmail,CHARINDEX('@',StaffEmail)+ 1 ,LEN(StaffEmail) , 'jigitalcloun.net') AS 'StaffEmail',
-        StaffAddress,
-        CONCAT(StaffSalary/1000000, ' milion(s) IDR') AS 'StaffSalary', 
-        subquery.TotalValue
+SELECT  
+  CONCAT('Staff ', LEFT(StaffName,charindex(' ',StaffName))) AS 'StaffName', 
+  STUFF(StaffEmail,CHARINDEX('@',StaffEmail)+ 1 ,LEN(StaffEmail) , 'jigitalcloun.net') AS 'StaffEmail',
+  StaffAddress,
+  CONCAT(StaffSalary/1000000, ' milion(s) IDR') AS 'StaffSalary', 
+  subquery.TotalValue
 FROM MsStaff ms 
 JOIN(
   SELECT StaffID, SUM(ServerPrice/120 * tr.RentalDuration) AS 'TotalValue'
@@ -215,9 +216,6 @@ HAVING SUM(R.RentalDuration) > 50;
 
 GO
 
-SELECT * 
-FROM ServerRentalDurationView 
-
 -- 10
 -- Create a view named ‘SoldProcessorPerformanceView’ to display SaleID, MinEffectiveClock 
 -- (obtained from the minimum value of ProcessorClockMHZ * ProcessorCoreCount * 0.675, displayed with 1 decimal places followed by ' MHz'), 
@@ -238,6 +236,3 @@ GROUP BY TS.SalesID
 HAVING MIN(CAST(MP.ProcessorClockSpeed * MP.ProcessorCores * 0.675 AS DECIMAL(10, 1))) >= 10000
 
 GO
-
-SELECT * 
-FROM SoldProcessorPerformanceView
