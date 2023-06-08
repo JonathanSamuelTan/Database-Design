@@ -27,16 +27,16 @@ GROUP BY Sf.StaffID, Sf.StaffName, Sf.StaffGender, Sf.StaffSalary
 -- from the equator (LocationLatitude must be at least -30 and at most 30).
 
 SELECT  
-  CONCAT (LocationCity,' ', LocationCountry) AS 'Location',
-  MIN (ServerPrice) AS 'Cheapest Server Price'
+  CONCAT (LocationCityName,' ', LocationCountryName) AS 'Location',
+  MIN (ServerPriceIDR) AS 'Cheapest Server Price'
 FROM MsLocation
   JOIN MsServer ON MsLocation.LocationID = MsServer. LocationID
   JOIN MsProcessor ON MsServer.ProcessorID = MsProcessor.ProcessorID
 WHERE 
-  ProcessorClockSpeed > 3000
+  ProcessorClock > 3000
   AND
   LocationLatitude between -30 and 30
-GROUP BY Locationcity, LocationCountry
+GROUP BY LocationCityName, LocationCountryName
 
 -- 3
 -- Display RentalID, MaxMemoryFrequency (obtained from the maximum MemoryFrequencyMHz followed by ' MHz'), 
@@ -45,8 +45,8 @@ GROUP BY Locationcity, LocationCountry
 
 SELECT  
   tr.RentalID, 
-  CONCAT(MAX(MemoryFrequency),' MHz') AS 'MaxMemoryFrequency',
-  CONCAT(sum(MemoryCapacity), ' GB') AS 'TotalMemoryCapacity'
+  CONCAT(MAX(MemoryFrequencyMHz),' MHz') AS 'MaxMemoryFrequency',
+  CONCAT(sum(MemoryCapacityGB), ' GB') AS 'TotalMemoryCapacity'
 FROM TrRental tr 
   JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
   JOIN MsServer ms ON trd.ServerID = ms.ServerID 
@@ -63,15 +63,15 @@ GROUP BY tr.RentalID
 -- occurring in 2016 until 2020 and has AverageServerPrice of more than 50000000.
 
 SELECT  
-  S.SalesID,
+  S.SaleID,
   Count(SD.ServerID) as 'ServerCount',
-  CONCAT(CAST(AVG(ServerPrice)/1000000 as DECIMAL(18,1)),' million(s) IDR') as 'AverageServerPrice'
+  CONCAT(CAST(AVG(ServerPriceIDR)/1000000 as DECIMAL(18,1)),' million(s) IDR') as 'AverageServerPrice'
 FROM TrSales S 
-  JOIN TrSalesDetail SD on S.SalesID = SD.SalesID 
+  JOIN TrSalesDetail SD on S.SaleID = SD.SaleID 
   JOIN MsServer SV on SD.ServerID = SV.ServerID
 WHERE YEAR(S.SalesDate) between 2016 and 2020 
-GROUP BY S.SalesID
-HAVING AVG(ServerPrice) > 50000000
+GROUP BY S.SaleID
+HAVING AVG(ServerPriceIDR) > 50000000
 
 -- 5
 -- Display SaleID, MostExpensiveServerPrice (obtained from the most expensive server price in the transaction), 
@@ -80,27 +80,27 @@ HAVING AVG(ServerPrice) > 50000000
 -- (ALIAS SUBQUERY)
 
 SELECT
-  Distinct s.SalesID,
+  Distinct s.SaleID,
   top_servers.MostExpensiveServerPrice,
   CAST(
-    ((0.55 * p.ProcessorClockSpeed * p.ProcessorCores) + (m.MemoryFrequency * m.MemoryCapacity * 0.05)) / 143200 as decimal(18,3)
+    ((0.55 * p.ProcessorClock * p.ProcessorCoreCount) + (m.MemoryFrequencyMHz * m.MemoryCapacityGB * 0.05)) / 143200 as decimal(18,3)
   ) AS 'HardwareRatingIndex'
 FROM
   TrSales s JOIN 
-  TrSalesDetail sd ON s.SalesID = sd.SalesID
+  TrSalesDetail sd ON s.SaleID = sd.SaleID
   JOIN (
     SELECT TOP 10
       Sv.ServerID,
       Sv.ProcessorID,
       Sv.MemoryID,
-      Sv.ServerPrice AS MostExpensiveServerPrice,
+      Sv.ServerPriceIDR AS MostExpensiveServerPrice,
       ts.SalesDate
     FROM
       MsServer Sv
       JOIN TrSalesDetail tsd ON Sv.ServerID = tsd.ServerID
-      JOIN TrSales ts ON tsd.SalesID = ts.SalesID
+      JOIN TrSales ts ON tsd.SaleID = ts.SaleID
     ORDER BY
-      Sv.ServerPrice DESC
+      Sv.ServerPriceIDR DESC
   ) top_servers ON sd.ServerID = top_servers.ServerID
   JOIN MsProcessor p ON top_servers.ProcessorID = p.ProcessorID
   JOIN MsMemory m ON top_servers.MemoryID = m.MemoryID
@@ -115,17 +115,17 @@ FROM
 
 
 SELECT  CONCAT( LEFT(ExpensiveProcessor.ProcessorName,1),'  ', ExpensiveProcessor.ProcessorModelCode ) as 'ProcessorName',
-        CONCAT( ExpensiveProcessor.ProcessorCores, ' core(s)') as 'CoreCount',
+        CONCAT( ExpensiveProcessor.ProcessorCoreCount, ' core(s)') as 'CoreCount',
         ExpensiveProcessor.ProcessorPrice as 'ProcessorPriceIDR'
 FROM (
-    SELECT ProcessorID, ProcessorName, ProcessorCores, ProcessorPrice, ProcessorModelCode
+    SELECT ProcessorID, ProcessorName, ProcessorCoreCount, ProcessorPrice, ProcessorModelCode
     FROM MsProcessor
     WHERE 
     
-    CONCAT(ProcessorCores, '_', ProcessorPrice) IN (
-        SELECT CONCAT(ProcessorCores, '_', MAX(ProcessorPrice))
+    CONCAT(ProcessorCoreCount, '_', ProcessorPrice) IN (
+        SELECT CONCAT(ProcessorCoreCount, '_', MAX(ProcessorPrice))
         FROM MsProcessor
-        GROUP BY ProcessorCores
+        GROUP BY ProcessorCoreCount
     ) 
     
     and
@@ -137,7 +137,7 @@ FROM (
         WHERE L.LocationLatitude between 0 and 90
     )
 
-) AS [ExpensiveProcessor];
+) AS [ExpensiveProcessor]
 
 --7
 -- Display HiddenCustomerName (obtained from the first letter of CustomerName followed by '***** *****'), 
@@ -156,15 +156,15 @@ FROM MsCustomer C
 JOIN (
   SELECT
     S.CustomerID,
-    COUNT(S.SalesID) AS CurrentPurchaseAmount,
-    SUM(Sv.ServerPrice) AS CountedPurchaseAmount
+    COUNT(S.SaleID) AS CurrentPurchaseAmount,
+    SUM(Sv.ServerPriceIDR) AS CountedPurchaseAmount
   FROM TrSales S
-  JOIN TrSalesDetail SD ON S.SalesID = SD.SalesID
+  JOIN TrSalesDetail SD ON S.SaleID = SD.SaleID
   JOIN MsServer Sv ON SD.ServerID = Sv.ServerID
   WHERE YEAR(S.SalesDate) BETWEEN 2015 AND 2019
   GROUP BY S.CustomerID
 ) as Top10 ON C.CustomerID = Top10.CustomerID
-ORDER BY Top10.CurrentPurchaseAmount DESC;
+ORDER BY Top10.CurrentPurchaseAmount DESC
 
 -- 8
 -- Display StaffName (obtained from 'Staff ' followed by the first word of StaffName), StaffEmail (obtained from replacing part after the '@' in StaffEmail 
@@ -180,7 +180,7 @@ SELECT
   subquery.TotalValue
 FROM MsStaff ms 
 JOIN(
-  SELECT StaffID, SUM(ServerPrice/120 * tr.RentalDuration) AS 'TotalValue'
+  SELECT StaffID, SUM(ServerPriceIDR/120 * tr.RentalDuration) AS 'TotalValue'
   FROM TrRental tr
   JOIN TrRentalDetail trd ON tr.RentalID = trd.RentalID
   JOIN MsServer msr ON msr.ServerID = trd.ServerID
@@ -192,7 +192,7 @@ JOIN (
     FROM MsStaff
 )avg_subquery ON ms.StaffSalary < avg_subquery.AvgSalary
 
-WHERE subquery.TotalValue > 10000000;
+WHERE subquery.TotalValue > 10000000
 
 
 -- 9
@@ -212,7 +212,7 @@ FROM TrRentalDetail RD
   JOIN MsLocation L ON S.LocationID = L.LocationID
 WHERE L.LocationLatitude between -99 and 0
 GROUP BY RD.ServerID
-HAVING SUM(R.RentalDuration) > 50;
+HAVING SUM(R.RentalDuration) > 50
 
 GO
 
@@ -224,15 +224,15 @@ GO
 GO
 
 CREATE VIEW SoldProcessorPerformanceView AS
-SELECT  TS.SalesID, 
-        CONCAT(MIN(CAST(MP.ProcessorClockSpeed * MP.ProcessorCores * 0.675 AS DECIMAL(10, 1))),' MHz') AS MinEffectiveClock,
-        CONCAT(MAX(CAST(MP.ProcessorClockSpeed * MP.ProcessorCores * 0.675 AS DECIMAL(10, 1))), 'MHz') AS MaxEffectiveClock
+SELECT  TS.SaleID, 
+        CONCAT(MIN(CAST(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675 AS DECIMAL(10, 1))),' MHz') AS MinEffectiveClock,
+        CONCAT(MAX(CAST(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675 AS DECIMAL(10, 1))), 'MHz') AS MaxEffectiveClock
 FROM TrSales TS
-  JOIN TrSalesDetail TSD ON TS.SalesID = TSD.SalesID
+  JOIN TrSalesDetail TSD ON TS.SaleID = TSD.SaleID
   JOIN MsServer MS ON TSD.ServerID = MS.ServerID
   JOIN MsProcessor MP ON MS.ProcessorID = MP.ProcessorID
-WHERE MP.ProcessorCores & (MP.ProcessorCores - 1) = 0
-GROUP BY TS.SalesID
-HAVING MIN(CAST(MP.ProcessorClockSpeed * MP.ProcessorCores * 0.675 AS DECIMAL(10, 1))) >= 10000
+WHERE MP.ProcessorCoreCount & (MP.ProcessorCoreCount - 1) = 0
+GROUP BY TS.SaleID
+HAVING MIN(CAST(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675 AS DECIMAL(10, 1))) >= 10000
 
 GO

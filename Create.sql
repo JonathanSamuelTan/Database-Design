@@ -42,8 +42,8 @@ CREATE TABLE MsProcessor(
     ProcessorName VARCHAR(50) NOT NULL,
     ProcessorModelCode VARCHAR(50) NOT NULL,
     ProcessorPrice INT NOT NULL,
-    ProcessorClockSpeed INT NOT NULL CHECK(ProcessorClockSpeed BETWEEN 1500 AND 6000),
-    ProcessorCores INT NOT NULL CHECK(ProcessorCores BETWEEN 1 AND 24)
+    ProcessorClock INT NOT NULL CHECK(ProcessorClock BETWEEN 1500 AND 6000),
+    ProcessorCoreCount INT NOT NULL CHECK(ProcessorCoreCount BETWEEN 1 AND 24)
 )
 
 CREATE TABLE MsMemory(
@@ -51,14 +51,14 @@ CREATE TABLE MsMemory(
     MemoryName VARCHAR(50) NOT NULL,
     MemoryModelCode VARCHAR(50) NOT NULL,
     MemoryPrice INT NOT NULL,
-    MemoryCapacity INT NOT NULL  CHECK(MemoryCapacity BETWEEN 1 AND 256),
-    MemoryFrequency INT NOT NULL CHECK(MemoryFrequency BETWEEN 1000 AND 5000)
+    MemoryCapacityGB INT NOT NULL  CHECK(MemoryCapacityGB BETWEEN 1 AND 256),
+    MemoryFrequencyMHz INT NOT NULL CHECK(MemoryFrequencyMHz BETWEEN 1000 AND 5000)
 )
 
 CREATE TABLE MsLocation(
     LocationID CHAR(9) PRIMARY KEY NOT NULL CHECK(LocationID LIKE 'JCN-L[3-7][1-2][0-9][0-9]'),
-    LocationCity VARCHAR(50) NOT NULL,
-    LocationCountry VARCHAR(50) NOT NULL,
+    LocationCityName VARCHAR(50) NOT NULL,
+    LocationCountryName VARCHAR(50) NOT NULL,
     LocationZIPCode INT NOT NULL,
     LocationLatitude DECIMAL(9,6) NOT NULL CHECK(LocationLatitude BETWEEN -90 and 90),
     LocationLongitude DECIMAL(10,6) NOT NULL CHECK(LocationLongitude BETWEEN -180 and 180),
@@ -71,7 +71,7 @@ CREATE TABLE MsServer(
     MemoryID CHAR(9) NOT NULL,
     LocationID CHAR(9) NOT NULL,
     ProcessorID CHAR(9) NOT NULL,
-    ServerPrice INT NOT NULL,
+    ServerPriceIDR INT NOT NULL,
     FOREIGN KEY(MemoryID) REFERENCES MsMemory(MemoryID)
     ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY(LocationID) REFERENCES MsLocation(LocationID)
@@ -93,7 +93,7 @@ CREATE TABLE TrRental(
 )
 
 CREATE TABLE TrSales(
-    SalesID CHAR(9) PRIMARY KEY NOT NULL CHECK(SalesID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
+    SaleID CHAR(9) PRIMARY KEY NOT NULL CHECK(SaleID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
     CustomerID CHAR(9) NOT NULL,
     StaffID CHAR(9) NOT NULL,
     SalesDate DATE NOT NULL,
@@ -115,10 +115,10 @@ CREATE TABLE TrRentalDetail(
 )
 
 CREATE TABLE TrSalesDetail(
-    SalesID CHAR(9) NOT NULL CHECK(SalesID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
+    SaleID CHAR(9) NOT NULL CHECK(SaleID LIKE 'JCN-S[0-2][1-2][0-9][0-9]'),
     ServerID CHAR(9) NOT NULL CHECK(ServerID LIKE 'JCN-V[3-7][1-2][0-9][0-9]'),
-    PRIMARY KEY(SalesID,ServerID),
-    FOREIGN KEY (SalesID) REFERENCES TrSales(SalesID)
+    PRIMARY KEY(SaleID,ServerID),
+    FOREIGN KEY (SaleID) REFERENCES TrSales(SaleID)
     ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (ServerID) REFERENCES MsServer(ServerID)
     ON UPDATE CASCADE ON DELETE CASCADE

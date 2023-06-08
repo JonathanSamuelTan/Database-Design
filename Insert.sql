@@ -171,5 +171,3 @@ SELECT * FROM TrRentalDetail
 SELECT * FROM TrSales
 SELECT * FROM TrSalesDetail
 */
-
-SELECT * FROM TrSalesDetail
