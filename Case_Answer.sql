@@ -142,29 +142,32 @@ FROM (
 --7
 -- Display HiddenCustomerName (obtained from the first letter of CustomerName followed by '***** *****'), 
 -- CurrentPurchaseAmount (obtained from the amount of sale transactions made), CountedPurchaseAmount 
--- (obtained from the amount of sale transactions made), RewardPointsGiven (obtained from the total spending 
+-- taken from the amount of sale transactions made in 2015 - 2019), RewardPointsGiven (obtained from the total spending 
 -- (counted from the sum of ServerPriceIDR for all transactions made) of the customer divided by 1000000 followed by ' point(s)'), 
 -- for each customer who is in the top 10 customer with most spending in server purchasing (sale transactions) in 2015 until 2019 period.
 -- (ALIAS SUBQUERY)
 
 SELECT TOP(10)
-  CONCAT(LEFT(C.CustomerName, 1), '***** *****') AS HiddenCustomerName,
-  Top10.CurrentPurchaseAmount,
-  Top10.CountedPurchaseAmount,
-  CONCAT(Top10.CountedPurchaseAmount / 1000000, ' point(s)') AS RewardPointsGiven
-FROM MsCustomer C
+  CONCAT(LEFT(C.CustomerName, 1), '***** *****') AS 'HiddenCustomerName',
+  COUNT(S.SaleID) AS 'CurrentPurchaseAmount',
+  SQ.CountedPurchaseAmount AS 'CountedPurchaseAmount',
+  CONCAT(CAST(SUM(Sv.ServerPriceIDR) / 1000000 AS DECIMAL(10,2)), ' point(s)') AS 'RewardPointsGiven'
+FROM TrSales S
+JOIN TrSalesDetail SD ON S.SaleID = SD.SaleID
+JOIN MsServer Sv ON SD.ServerID = Sv.ServerID
+JOIN MsCustomer C ON C.CustomerID = S.CustomerID
 JOIN (
   SELECT
-    S.CustomerID,
-    COUNT(S.SaleID) AS CurrentPurchaseAmount,
-    SUM(Sv.ServerPriceIDR) AS CountedPurchaseAmount
-  FROM TrSales S
-  JOIN TrSalesDetail SD ON S.SaleID = SD.SaleID
-  JOIN MsServer Sv ON SD.ServerID = Sv.ServerID
-  WHERE YEAR(S.SalesDate) BETWEEN 2015 AND 2019
-  GROUP BY S.CustomerID
-) as Top10 ON C.CustomerID = Top10.CustomerID
-ORDER BY Top10.CurrentPurchaseAmount DESC
+    CustomerID,
+    COUNT(SaleID) AS CountedPurchaseAmount
+  FROM TrSales
+  WHERE YEAR(SalesDate) BETWEEN 2015 AND 2019
+  GROUP BY CustomerID
+) AS SQ ON SQ.CustomerID = C.CustomerID
+WHERE YEAR(S.SalesDate) BETWEEN 2015 AND 2019
+GROUP BY C.CustomerID, C.CustomerName, SQ.CountedPurchaseAmount
+ORDER BY SUM(Sv.ServerPriceIDR) DESC
+
 
 -- 8
 -- Display StaffName (obtained from 'Staff ' followed by the first word of StaffName), StaffEmail (obtained from replacing part after the '@' in StaffEmail 
@@ -224,15 +227,23 @@ GO
 GO
 
 CREATE VIEW SoldProcessorPerformanceView AS
-SELECT  TS.SaleID, 
-        CONCAT(MIN(CAST(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675 AS DECIMAL(10, 1))),' MHz') AS MinEffectiveClock,
-        CONCAT(MAX(CAST(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675 AS DECIMAL(10, 1))), 'MHz') AS MaxEffectiveClock
+SELECT 
+TSD.SaleID,
+
+CONCAT(
+  CAST(MIN(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675) AS DECIMAL(10,1)), ' MHz'
+  ) AS 'MinEffectiveClock',
+
+CONCAT(
+  CAST(MAX(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675) AS DECIMAL(10,1)), ' MHz'
+  ) AS 'MaxEffectiveClock'
+
 FROM TrSales TS
   JOIN TrSalesDetail TSD ON TS.SaleID = TSD.SaleID
   JOIN MsServer MS ON TSD.ServerID = MS.ServerID
   JOIN MsProcessor MP ON MS.ProcessorID = MP.ProcessorID
 WHERE MP.ProcessorCoreCount & (MP.ProcessorCoreCount - 1) = 0
-GROUP BY TS.SaleID
-HAVING MIN(CAST(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675 AS DECIMAL(10, 1))) >= 10000
+GROUP BY TSD.SaleID
+HAVING CAST(MIN(MP.ProcessorClock * MP.ProcessorCoreCount * 0.675) AS DECIMAL(10,1)) > 10000
 
 GO
